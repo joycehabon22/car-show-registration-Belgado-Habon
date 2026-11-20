@@ -1,3 +1,4 @@
+
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.Common;
@@ -10,7 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Database
 builder.Services.AddDbContext<IAppDbContext, AppDbContext>(options =>
-    options.UseInMemoryDatabase("VerticalSliceDb"));
+    options.UseSqlite(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Validators
 builder.Services.AddValidatorsFromAssembly(typeof(IAppDbContext).Assembly);
@@ -33,14 +35,12 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
-// Seed data
+// Initialize database
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-    // dbContext.<Entities>.AddRange(...);
-
-    dbContext.SaveChanges();
+    dbContext.Database.EnsureCreated();
 }
 
 // Configure the HTTP request pipeline
