@@ -15,3 +15,5 @@ dist/
 # Visual Studio
 *.user
 *.suo
+# SQLite database files
+*.db
