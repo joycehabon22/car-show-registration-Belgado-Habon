@@ -1,23 +1,44 @@
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Application.Features.CreateRegistration;
+using Application.Features.GetRegistrations;
 using Domain.Common;
 using FluentValidation;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using Api.Endpoints.Registrations;
+using System.Text.Json.Serialization;
+using Application.Features.GetRegistrationById;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Database
 builder.Services.AddDbContext<IAppDbContext, AppDbContext>(options =>
-    options.UseInMemoryDatabase("VerticalSliceDb"));
+    options.UseSqlite(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Validators
 builder.Services.AddValidatorsFromAssembly(typeof(IAppDbContext).Assembly);
 
 // Handlers
-// builder.Services.AddScoped<ICommandHandler<TCommand, Result<TResponse>>, TCommandHandler>();
-// builder.Services.AddScoped<IQueryHandler<TQuery, Result<TResponse>>, TQueryHandler>();
+builder.Services.AddScoped<
+    ICommandHandler<CreateRegistrationCommand, Result<CreateRegistrationResponse>>,
+    CreateRegistrationCommandHandler>();
+
+builder.Services.AddScoped<
+    IQueryHandler<GetRegistrationsQuery, GetRegistrationsResponse>,
+    GetRegistrationsQueryHandler>();
+
+builder.Services.AddScoped<
+    IQueryHandler<GetRegistrationByIdQuery, Result<GetRegistrationByIdResponse>>,
+    GetRegistrationByIdQueryHandler>();
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 // API
 builder.Services.AddEndpointsApiExplorer();
@@ -33,14 +54,12 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
-// Seed data
+// Initialize database
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-    // dbContext.<Entities>.AddRange(...);
-
-    dbContext.SaveChanges();
+    dbContext.Database.EnsureCreated();
 }
 
 // Configure the HTTP request pipeline
@@ -54,6 +73,6 @@ if (app.Environment.IsDevelopment())
 app.MapGet("/", () => "Welcome to the Vertical Slice API! Go to /scalar/v1 for API documentation.");
 
 // Map endpoints
-// app.Map{FeatureGroup}Endpoints();
+app.MapRegistrationEndpoints();
 
 app.Run();
