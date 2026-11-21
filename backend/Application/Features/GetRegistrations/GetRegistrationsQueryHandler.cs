@@ -35,7 +35,9 @@ public sealed class GetRegistrationsQueryHandler
         if (!string.IsNullOrWhiteSpace(query.ParticipantName))
         {
             registrations = registrations.Where(
-                r => r.ParticipantName.Contains(query.ParticipantName));
+    r => EF.Functions.Like(
+        r.ParticipantName,
+        $"%{query.ParticipantName}%"));
         }
 
         var totalCount = await registrations.CountAsync(cancellationToken);
