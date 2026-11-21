@@ -13,4 +13,4 @@ public sealed record CreateRegistrationCommand(
     string PlateNumber,
     RegistrationType RegistrationType,
     decimal AmountPaid
-) : ICommand<Result<Guid>>;
+) : ICommand<Result<CreateRegistrationResponse>>;
