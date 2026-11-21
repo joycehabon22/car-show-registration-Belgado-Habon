@@ -1,14 +1,15 @@
-
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Application.Features.CreateRegistration;
+using Application.Features.GetRegistrations;
 using Domain.Common;
 using FluentValidation;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
-using Application.Features.CreateRegistration;
 using Api.Endpoints.Registrations;
 using System.Text.Json.Serialization;
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -24,6 +25,10 @@ builder.Services.AddValidatorsFromAssembly(typeof(IAppDbContext).Assembly);
 builder.Services.AddScoped<
     ICommandHandler<CreateRegistrationCommand, Result<CreateRegistrationResponse>>,
     CreateRegistrationCommandHandler>();
+
+builder.Services.AddScoped<
+    IQueryHandler<GetRegistrationsQuery, GetRegistrationsResponse>,
+    GetRegistrationsQueryHandler>();
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
