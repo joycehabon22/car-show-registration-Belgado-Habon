@@ -1,5 +1,6 @@
 import { Users, Wallet, AlertCircle, CheckCircle2, UserCheck, Percent } from 'lucide-react';
 import { KpiCard } from './KpiCard';
+export default KpiCards;
 
 const formatPhp = (amount) =>
   new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(amount || 0);
@@ -66,5 +67,6 @@ export function KpiCards({ summary, isLoading }) {
         accent="indigo"
       />
     </div>
+    
   );
 }

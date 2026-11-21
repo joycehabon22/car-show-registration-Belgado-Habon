@@ -1,4 +1,5 @@
 import { Search, RotateCcw, Filter } from "lucide-react";
+export default RegistrationFilters;
 export function RegistrationFilters({
   searchTerm,
   onSearchChange,

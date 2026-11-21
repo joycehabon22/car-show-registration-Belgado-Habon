@@ -1,6 +1,7 @@
 import { StatusBadge } from "./StatusBadge";
 import { PaymentBadge } from "./PaymentBadge";
 import { Car, Mail, Phone, Calendar } from "lucide-react";
+export default RegistrationTable;
 
 const formatPhp = (amount) =>
   new Intl.NumberFormat("en-PH", {
@@ -59,7 +60,7 @@ export function RegistrationTable({ registrations, isLoading, onSelectRow }) {
           <tbody className="divide-y divide-white/10 text-sm">
             {registrations.map((reg) => (
               <tr
-                key=
+                key={reg.id ?? reg.registrationNumber}
                 onClick={() => onSelectRow && onSelectRow(reg)}
                 className="hover:bg-white/5 transition cursor-pointer group"
               >
