@@ -10,6 +10,8 @@ using Scalar.AspNetCore;
 using Api.Endpoints.Registrations;
 using System.Text.Json.Serialization;
 using Application.Features.GetRegistrationById;
+using Application.Features.GetRegistrationSummary;
+using Infrastructure.Persistence.Seeding;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +37,10 @@ builder.Services.AddScoped<
     IQueryHandler<GetRegistrationByIdQuery, Result<GetRegistrationByIdResponse>>,
     GetRegistrationByIdQueryHandler>();
 
+builder.Services.AddScoped<
+    IQueryHandler<GetRegistrationSummaryQuery, GetRegistrationSummaryResponse>,
+    GetRegistrationSummaryQueryHandler>();
+
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -54,12 +60,14 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
-// Initialize database
+// Initialize database and seed data
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-    dbContext.Database.EnsureCreated();
+    dbContext.Database.Migrate();
+
+    await RegistrationSeeder.SeedAsync(dbContext);
 }
 
 // Configure the HTTP request pipeline

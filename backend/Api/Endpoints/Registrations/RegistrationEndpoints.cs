@@ -9,6 +9,7 @@ using Application.Features.GetRegistrationById;
 using Domain.Common;
 using Domain.Enums;
 using FluentValidation;
+using Application.Features.GetRegistrationSummary;
 
 public static class RegistrationEndpoints
 {
@@ -91,7 +92,27 @@ public static class RegistrationEndpoints
         .Produces<GetRegistrationsResponse>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest);
 
-       
+
+        // GET: Get Registration Summary
+        group.MapGet("/summary", async (
+            IQueryHandler<GetRegistrationSummaryQuery, GetRegistrationSummaryResponse> handler,
+            CancellationToken cancellationToken) =>
+        {
+            var query = new GetRegistrationSummaryQuery();
+
+            var result = await handler.HandleAsync(
+                query,
+                cancellationToken);
+
+            return Results.Ok(result);
+        })
+        .WithName("GetRegistrationSummary")
+        .WithSummary("Get car show registration summary")
+        .WithDescription("Gets registration totals, status breakdown, and payment summary.")
+        .Produces<GetRegistrationSummaryResponse>(StatusCodes.Status200OK);
+
+
+
         // GET: Get Registration By ID
         group.MapGet("/{id:guid}", async (
             Guid id,
@@ -117,4 +138,6 @@ public static class RegistrationEndpoints
         .Produces<GetRegistrationByIdResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status404NotFound);
     }
+
+
 }
