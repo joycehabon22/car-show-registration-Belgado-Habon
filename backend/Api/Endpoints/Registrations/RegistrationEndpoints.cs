@@ -1,9 +1,11 @@
-﻿namespace Api.Endpoints.Registrations;
+﻿
+namespace Api.Endpoints.Registrations;
 
 using Api.Common.Extensions;
 using Application.Abstractions.Messaging;
 using Application.Features.CreateRegistration;
 using Application.Features.GetRegistrations;
+using Application.Features.GetRegistrationById;
 using Domain.Common;
 using Domain.Enums;
 using FluentValidation;
@@ -55,12 +57,12 @@ public static class RegistrationEndpoints
         // GET: Get All Registrations
         group.MapGet("/", async (
             IQueryHandler<GetRegistrationsQuery, GetRegistrationsResponse> handler,
-CancellationToken cancellationToken,
-RegistrationType? registrationType = null,
-RegistrationStatus? status = null,
-string? participantName = null,
-int page = 1,
-int pageSize = 10) =>
+            CancellationToken cancellationToken,
+            RegistrationType? registrationType = null,
+            RegistrationStatus? status = null,
+            string? participantName = null,
+            int page = 1,
+            int pageSize = 10) =>
         {
             if (page < 1 || pageSize < 1 || pageSize > 50)
             {
@@ -88,5 +90,31 @@ int pageSize = 10) =>
         .WithDescription("Gets registrations with optional filters and pagination.")
         .Produces<GetRegistrationsResponse>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status400BadRequest);
+
+       
+        // GET: Get Registration By ID
+        group.MapGet("/{id:guid}", async (
+            Guid id,
+            IQueryHandler<GetRegistrationByIdQuery, Result<GetRegistrationByIdResponse>> handler,
+            CancellationToken cancellationToken) =>
+        {
+            var query = new GetRegistrationByIdQuery(id);
+
+            var result = await handler.HandleAsync(
+                query,
+                cancellationToken);
+
+            if (!result.IsSuccess)
+            {
+                return result.ToProblemDetails();
+            }
+
+            return Results.Ok(result.Value);
+        })
+        .WithName("GetRegistrationById")
+        .WithSummary("Get a car show registration by ID")
+        .WithDescription("Gets a single registration using its unique ID.")
+        .Produces<GetRegistrationByIdResponse>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status404NotFound);
     }
 }

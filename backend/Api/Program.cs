@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Api.Endpoints.Registrations;
 using System.Text.Json.Serialization;
+using Application.Features.GetRegistrationById;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,10 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     IQueryHandler<GetRegistrationsQuery, GetRegistrationsResponse>,
     GetRegistrationsQueryHandler>();
+
+builder.Services.AddScoped<
+    IQueryHandler<GetRegistrationByIdQuery, Result<GetRegistrationByIdResponse>>,
+    GetRegistrationByIdQueryHandler>();
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
