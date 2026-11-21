@@ -59,7 +59,7 @@ public static class RegistrationEndpoints
         group.MapGet("/", async (
             IQueryHandler<GetRegistrationsQuery, GetRegistrationsResponse> handler,
             CancellationToken cancellationToken,
-            RegistrationType? registrationType = null,
+            RegistrationType? type = null,  
             RegistrationStatus? status = null,
             string? participantName = null,
             int page = 1,
@@ -74,11 +74,11 @@ public static class RegistrationEndpoints
             }
 
             var query = new GetRegistrationsQuery(
-                registrationType,
-                status,
-                participantName,
-                page,
-                pageSize);
+    type,
+    status,
+    participantName,
+    page,
+    pageSize);
 
             var result = await handler.HandleAsync(
                 query,

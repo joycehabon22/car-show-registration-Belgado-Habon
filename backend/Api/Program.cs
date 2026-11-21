@@ -15,6 +15,17 @@ using Infrastructure.Persistence.Seeding;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 
 // Database
 builder.Services.AddDbContext<IAppDbContext, AppDbContext>(options =>
@@ -59,6 +70,9 @@ builder.Services.AddOpenApi(options =>
 });
 
 var app = builder.Build();
+
+app.UseRouting();
+app.UseCors("AllowReactApp");
 
 // Initialize database and seed data
 using (var scope = app.Services.CreateScope())
