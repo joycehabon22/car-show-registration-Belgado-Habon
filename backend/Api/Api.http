@@ -1,6 +1,314 @@
+
 @Api_HostAddress = http://localhost:5205
 
-GET {{Api_HostAddress}}/api/students/
+### Case 01 - Create valid Competitor registration with partial payment
+POST {{Api_HostAddress}}/api/registrations
+Content-Type: application/json
+
+{
+  "participantName": "Juan Dela Cruz",
+  "contactNumber": "09171234567",
+  "email": "juan.delacruz@example.com",
+  "address": "123 Rizal St., Naga City",
+  "carMakeModel": "Toyota Supra MK4",
+  "plateNumber": "TST 1001",
+  "registrationType": "Competitor",
+  "amountPaid": 1000
+}
+
+### Case 02 - Create Exhibitor registration with no payment
+POST {{Api_HostAddress}}/api/registrations
+Content-Type: application/json
+
+{
+  "participantName": "Maria Santos",
+  "contactNumber": "09171234568",
+  "email": "maria.santos@example.com",
+  "address": "456 Rizal St., Naga City",
+  "carMakeModel": "Honda Civic",
+  "plateNumber": "TST 1002",
+  "registrationType": "Exhibitor",
+  "amountPaid": 0
+}
+
+### Case 03 - Create VIP registration with full payment
+POST {{Api_HostAddress}}/api/registrations
+Content-Type: application/json
+
+{
+  "participantName": "Pedro Reyes",
+  "contactNumber": "09171234569",
+  "email": "pedro.reyes@example.com",
+  "address": "789 Rizal St., Naga City",
+  "carMakeModel": "Nissan GTR",
+  "plateNumber": "TST 1003",
+  "registrationType": "VIP",
+  "amountPaid": 5000
+}
+
+### Case 04 - Check sequential registration numbers
+GET {{Api_HostAddress}}/api/registrations?page=1&pageSize=50
 Accept: application/json
 
-###
+### Case 05 - Attempt to submit server-managed fields
+POST {{Api_HostAddress}}/api/registrations
+Content-Type: application/json
+
+{
+  "participantName": "Alex Cruz",
+  "contactNumber": "09171234570",
+  "email": "alex.cruz@example.com",
+  "address": "123 Mabini St., Naga City",
+  "carMakeModel": "Toyota Vios",
+  "plateNumber": "TST 1005",
+  "registrationType": "VIP",
+  "amountPaid": 0,
+  "registrationFee": 1,
+  "status": "Confirmed",
+  "registrationNumber": "HACK-1"
+}
+
+
+### Case 06 - Empty required fields
+POST {{Api_HostAddress}}/api/registrations
+Content-Type: application/json
+
+{
+  "participantName": "",
+  "contactNumber": "",
+  "email": "",
+  "address": "",
+  "carMakeModel": "",
+  "plateNumber": "",
+  "registrationType": "Competitor",
+  "amountPaid": 0
+}
+
+### Case 07 - Invalid contact number
+POST {{Api_HostAddress}}/api/registrations
+Content-Type: application/json
+
+{
+  "participantName": "Test User",
+  "contactNumber": "12345",
+  "email": "test@example.com",
+  "address": "Naga City",
+  "carMakeModel": "Toyota Vios",
+  "plateNumber": "TST 1007",
+  "registrationType": "Competitor",
+  "amountPaid": 0
+}
+
+### Case 08 - Invalid email
+POST {{Api_HostAddress}}/api/registrations
+Content-Type: application/json
+
+{
+  "participantName": "Test User",
+  "contactNumber": "09171234567",
+  "email": "juan-at-example",
+  "address": "Naga City",
+  "carMakeModel": "Toyota Vios",
+  "plateNumber": "TST 1008",
+  "registrationType": "Competitor",
+  "amountPaid": 0
+}
+
+### Case 09 - Payment exceeds registration fee
+POST {{Api_HostAddress}}/api/registrations
+Content-Type: application/json
+
+{
+  "participantName": "Test User",
+  "contactNumber": "09171234567",
+  "email": "test@example.com",
+  "address": "Naga City",
+  "carMakeModel": "Honda Civic",
+  "plateNumber": "TST 1009",
+  "registrationType": "Exhibitor",
+  "amountPaid": 2000
+}
+
+### Case 10 - Negative payment
+POST {{Api_HostAddress}}/api/registrations
+Content-Type: application/json
+
+{
+  "participantName": "Test User",
+  "contactNumber": "09171234567",
+  "email": "test@example.com",
+  "address": "Naga City",
+  "carMakeModel": "Honda Civic",
+  "plateNumber": "TST 1010",
+  "registrationType": "Competitor",
+  "amountPaid": -100
+}
+
+### Case 11 - Invalid registration type
+POST {{Api_HostAddress}}/api/registrations
+Content-Type: application/json
+
+{
+  "participantName": "Test User",
+  "contactNumber": "09171234567",
+  "email": "test@example.com",
+  "address": "Naga City",
+  "carMakeModel": "Honda Civic",
+  "plateNumber": "TST 1011",
+  "registrationType": "Sponsor",
+  "amountPaid": 0
+}
+
+### Case 12 - Participant name exceeds 150 characters
+POST {{Api_HostAddress}}/api/registrations
+Content-Type: application/json
+
+{
+  "participantName": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "contactNumber": "09171234567",
+  "email": "test@example.com",
+  "address": "Naga City",
+  "carMakeModel": "Honda Civic",
+  "plateNumber": "TST 1012",
+  "registrationType": "Competitor",
+  "amountPaid": 0
+}
+
+### Case 13 - Duplicate plate number
+POST {{Api_HostAddress}}/api/registrations
+Content-Type: application/json
+
+{
+  "participantName": "Duplicate Test",
+  "contactNumber": "09171234567",
+  "email": "duplicate@example.com",
+  "address": "Naga City",
+  "carMakeModel": "Toyota Supra MK4",
+  "plateNumber": "TST 1001",
+  "registrationType": "Competitor",
+  "amountPaid": 1000
+}
+
+  
+### Case 14 - Get registrations with default pagination
+GET {{Api_HostAddress}}/api/registrations
+Accept: application/json
+
+### Case 15 - Check newest registrations appear first
+GET {{Api_HostAddress}}/api/registrations?page=1&pageSize=50
+Accept: application/json
+
+### Case 16 - Get second page with page size of 5
+GET {{Api_HostAddress}}/api/registrations?page=2&pageSize=5
+Accept: application/json
+
+### Case 17 - Request a page beyond available records
+GET {{Api_HostAddress}}/api/registrations?page=999
+Accept: application/json
+
+### Case 18 - Request invalid page number
+GET {{Api_HostAddress}}/api/registrations?page=0
+Accept: application/json
+
+### Case 19 - Request page size above the maximum
+GET {{Api_HostAddress}}/api/registrations?pageSize=100
+Accept: application/json
+
+
+### Case 20 - Filter by VIP registration type
+GET {{Api_HostAddress}}/api/registrations?type=VIP
+Accept: application/json
+
+### Case 21 - Filter by Confirmed status
+GET {{Api_HostAddress}}/api/registrations?status=Confirmed
+Accept: application/json
+
+### Case 22 - Search participant name using lowercase
+GET {{Api_HostAddress}}/api/registrations?participantName=juan
+Accept: application/json
+
+### Case 23 - Search participant name using uppercase
+GET {{Api_HostAddress}}/api/registrations?participantName=JUAN
+Accept: application/json
+
+### Case 24 - Search using part of a participant name
+GET {{Api_HostAddress}}/api/registrations?participantName=dela
+Accept: application/json
+
+### Case 25 - Apply multiple filters
+GET {{Api_HostAddress}}/api/registrations?type=Competitor&status=Pending&participantName=juan
+Accept: application/json
+
+### Case 26 - Search for a participant with no matching records
+GET {{Api_HostAddress}}/api/registrations?participantName=zzzzzz
+Accept: application/json
+
+### Case 27 - Filter using invalid registration type
+GET {{Api_HostAddress}}/api/registrations?type=Sponsor
+Accept: application/json
+
+### Case 28 - Filter using invalid registration status
+GET {{Api_HostAddress}}/api/registrations?status=Done
+Accept: application/json
+
+
+### Case 29 - Get registration using an existing ID
+GET {{Api_HostAddress}}/api/registrations/980be8c8-816a-40a9-bfc0-562c4377cae0
+Accept: application/json
+
+### Case 30 - Get registration using a nonexistent ID
+GET {{Api_HostAddress}}/api/registrations/00000000-0000-0000-0000-000000000001
+Accept: application/json
+
+### Case 31 - Get registration using an invalid GUID
+GET {{Api_HostAddress}}/api/registrations/abc
+Accept: application/json
+
+
+### Case 32 - Get registration summary
+GET {{Api_HostAddress}}/api/registrations/summary
+Accept: application/json
+
+### Case 33 - Verify summary status counts
+GET {{Api_HostAddress}}/api/registrations/summary
+Accept: application/json
+
+### Case 34 - Compare summary total with registration list
+GET {{Api_HostAddress}}/api/registrations/summary
+Accept: application/json
+
+### Case 35 - Verify uncollected payment calculation
+GET {{Api_HostAddress}}/api/registrations/summary
+Accept: application/json
+
+### Case 36 - Verify cancelled registrations are excluded from financial totals
+GET {{Api_HostAddress}}/api/registrations/summary
+Accept: application/json
+
+### Case 37 - Verify summary updates after a new registration
+POST {{Api_HostAddress}}/api/registrations
+Content-Type: application/json
+
+{
+  "participantName": "Summary Test",
+  "contactNumber": "09171234571",
+  "email": "summary.test@example.com",
+  "address": "Naga City",
+  "carMakeModel": "Honda Civic",
+  "plateNumber": "TST 1037",
+  "registrationType": "Exhibitor",
+  "amountPaid": 500
+}
+
+### Case 38 - Verify summary endpoint route
+GET {{Api_HostAddress}}/api/registrations/summary
+Accept: application/json
+
+
+### Case 39 - Verify data persists after API restart
+GET {{Api_HostAddress}}/api/registrations?page=1&pageSize=50
+Accept: application/json
+
+### Case 40 - Verify unique database indexes
+GET {{Api_HostAddress}}/api/registrations
+Accept: application/json 
